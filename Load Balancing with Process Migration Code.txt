@@ -1,0 +1,36 @@
+import random
+
+# Simulated cloud nodes with random CPU load
+nodes = {
+    'Node1': random.randint(10, 90),
+    'Node2': random.randint(10, 90),
+    'Node3': random.randint(10, 90)
+}
+
+def print_node_status():
+    for node, load in nodes.items():
+        print(f"{node}: CPU Load = {load}%")
+    print()
+
+def migrate_process(from_node, to_node, load_percent):
+    print(f"Migrating {load_percent}% load from {from_node} to {to_node}")
+    nodes[from_node] -= load_percent
+    nodes[to_node] += load_percent
+
+def balance_load(threshold=70):
+    print("Before Load Balancing:")
+    print_node_status()
+
+    overloaded = [node for node, load in nodes.items() if load > threshold]
+    underloaded = [node for node, load in nodes.items() if load < threshold]
+
+    for high in overloaded:
+        for low in underloaded:
+            if nodes[high] > threshold and nodes[low] < threshold:
+                load_to_migrate = min(nodes[high] - threshold, threshold - nodes[low])
+                migrate_process(high, low, load_to_migrate)
+
+    print("After Load Balancing:")
+    print_node_status()
+
+balance_load()
