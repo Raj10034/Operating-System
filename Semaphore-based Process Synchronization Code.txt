@@ -1,0 +1,25 @@
+import threading
+import time
+
+semaphore = threading.Semaphore(1)
+shared_resource = 0
+
+def worker(thread_id):
+    global shared_resource
+    print(f"Thread {thread_id} is waiting to access the shared resource.")
+    semaphore.acquire()
+    print(f"Thread {thread_id} has entered the critical section.")
+    shared_resource += 1
+    time.sleep(1)
+    print(f"Thread {thread_id} updated shared_resource to {shared_resource}.")
+    semaphore.release()
+    print(f"Thread {thread_id} has exited the critical section.")
+
+threads = []
+for i in range(5):
+    t = threading.Thread(target=worker, args=(i,))
+    threads.append(t)
+    t.start()
+
+for t in threads:
+    t.join()
